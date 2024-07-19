@@ -1,9 +1,7 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-inventory',
-  standalone: true,
-  imports: [],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css'
 })
