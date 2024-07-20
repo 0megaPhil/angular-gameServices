@@ -9,13 +9,17 @@ import {Character} from "./character";
 })
 export class CharacterService {
   apiUrl = 'https://localhost:8081/character';
-  batchApiUrl = 'https://localhost:8081/characters';
 
   constructor(private http: HttpClient) {
   }
 
   batchGet(): Observable<Character[]> {
-    return this.http.get<Character[]>(this.batchApiUrl);
+    return this.http.get<Character[]>(this.apiUrl);
+  }
+
+  get(uuid: string): Observable<Character[]> {
+    return this.http.get<Character[]>(this.apiUrl,
+      {params: {"uuid": uuid}});
   }
 
   create(characterFormGroup: FormGroup): Observable<Character> {
