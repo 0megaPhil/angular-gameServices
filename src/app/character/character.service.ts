@@ -3,6 +3,8 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {FormGroup} from "@angular/forms";
 import {Character} from "./character";
+import {Apollo, gql} from "apollo-angular";
+import {ApolloQueryResult} from "@apollo/client";
 
 @Injectable({
   providedIn: 'root'
@@ -10,23 +12,69 @@ import {Character} from "./character";
 export class CharacterService {
   apiUrl = 'https://localhost:8081/character';
 
-  constructor(private http: HttpClient) {
+  private readonly apollo: Apollo;
+
+  constructor(private http: HttpClient, apollo: Apollo) {
+    this.apollo = apollo;
   }
 
-  batchGet(): Observable<Character[]> {
-    return this.http.get<Character[]>(this.apiUrl);
+  batchGet(limit: Number): Observable<ApolloQueryResult<Character[]>> {
+    return this.apollo.query({
+      query: gql`
+        query allCharacters($limit: Int) {
+          allCharacters(limit: $limit) {
+            uuid,
+            name,
+            description,
+            gender,
+            height,
+            age,
+            weight,
+            inventoryId
+          }
+        }`, variables: {limit: limit}
+    })
   }
 
-  get(uuid: string): Observable<Character[]> {
-    return this.http.get<Character[]>(this.apiUrl,
-      {params: {"uuid": uuid}});
+  get(uuid: string): Observable<ApolloQueryResult<Character>> {
+    return this.apollo.query({
+      query: gql`
+        query characterById($uuid: ID) {
+          characterById(uuid: $uuid) {
+            uuid,
+            name,
+            description,
+            gender,
+            height,
+            age,
+            weight,
+            inventoryId
+          }
+        }`, variables: {uuid}
+    })
   }
 
-  create(characterFormGroup: FormGroup): Observable<Character> {
+  create(characterFormGroup: FormGroup): Observable<ApolloQueryResult<Character>> {
     let character: Character;
     character = characterFormGroup.value;
     console.log("Character", character);
-    return this.http.post<Character>(this.apiUrl, character)
+
+    return this.apollo.query({
+      query: gql`
+        query createCharacter($input: CharacterInput) {
+          createCharacter(input: $input) {
+            uuid,
+            name,
+            description,
+            gender,
+            height,
+            age,
+            weight,
+            inventoryId
+          }
+        }
+      `, variables: {input: character}
+    });
   }
 
 }

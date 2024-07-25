@@ -13,6 +13,8 @@ import {CharacterComponent} from "./character/character.component";
 import {InventoryComponent} from "./inventory/inventory.component";
 import {UserComponent} from "./user/user.component";
 import {WorldComponent} from "./world/world.component";
+import {HttpClientModule} from '@angular/common/http';
+import {GraphQLModule} from './graphql.module';
 
 @NgModule({
   imports: [
@@ -24,7 +26,9 @@ import {WorldComponent} from "./world/world.component";
     InventoryModule,
     CharacterModule,
     WorldModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule,
+    GraphQLModule
   ],
   declarations: [
     AppComponent,

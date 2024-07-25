@@ -29,13 +29,14 @@ export class CharacterComponent {
     this._service = service;
     this._formBuilder = formBuilder;
     this._characterFormGroup = this.emptyCharacter()
-    this._service.batchGet().subscribe(chars => this._characters = chars)
+
+    this._service.batchGet(1000)
+      .subscribe(chars => {
+        this._characters = chars.data
+        console.log(this._characters)
+      })
     console.log('CharacterService Provided', service);
   }
-
-  // ngOnInit(): void {
-  //   this._characterFormGroup = this.characterForm();
-  // }
 
   emptyCharacter(): FormGroup {
     return this._formBuilder.group({
@@ -101,7 +102,8 @@ export class CharacterComponent {
 
   create(formGroup: FormGroup): void {
     console.log(formGroup)
-    this._service.create(formGroup).subscribe(ch => console.log("Created Character", ch));
+    this._service.create(formGroup)
+      .subscribe(ch => console.log("Created Character", ch.data));
   }
 
   batchGet(): Character[] {
