@@ -10,6 +10,7 @@ import {
   ValidatorFn,
   Validators
 } from "@angular/forms";
+import {Flavor} from "./flavor";
 
 @Component({
   selector: 'app-character',
@@ -21,6 +22,7 @@ export class CharacterComponent {
   title = 'Character Service';
   readonly _service: CharacterService;
   _characters: Character[] = [];
+  _flavored: Map<string, Flavor> = new Map;
   _characterFormGroup: FormGroup;
   _formBuilder: FormBuilder;
   protected readonly Character = Character;
@@ -29,13 +31,7 @@ export class CharacterComponent {
     this._service = service;
     this._formBuilder = formBuilder;
     this._characterFormGroup = this.emptyCharacter()
-
-    this._service.batchGet(1000)
-      .subscribe(chars => {
-        this._characters = chars.data
-        console.log(this._characters)
-      })
-    console.log('CharacterService Provided', service);
+    this.flavoredCharacters()
   }
 
   emptyCharacter(): FormGroup {
@@ -46,6 +42,12 @@ export class CharacterComponent {
       age: '',
       height: '',
       weight: '',
+      strength: '',
+      intelligence: '',
+      wisdom: '',
+      dexterity: '',
+      charisma: '',
+      constitution: '',
     });
   }
 
@@ -84,6 +86,36 @@ export class CharacterComponent {
         Validators.pattern("[0-9]"),
         Validators.min(1),
         Validators.max(Number.MAX_SAFE_INTEGER),
+      ]),
+      strength: new FormControl("value", [
+        Validators.pattern("[0-9]"),
+        Validators.min(1),
+        Validators.max(22),
+      ]),
+      intelligence: new FormControl("value", [
+        Validators.pattern("[0-9]"),
+        Validators.min(1),
+        Validators.max(22),
+      ]),
+      wisdom: new FormControl("value", [
+        Validators.pattern("[0-9]"),
+        Validators.min(1),
+        Validators.max(22),
+      ]),
+      dexterity: new FormControl("value", [
+        Validators.pattern("[0-9]"),
+        Validators.min(1),
+        Validators.max(22),
+      ]),
+      charisma: new FormControl("value", [
+        Validators.pattern("[0-9]"),
+        Validators.min(1),
+        Validators.max(22),
+      ]),
+      constitution: new FormControl("value", [
+        Validators.pattern("[0-9]"),
+        Validators.min(1),
+        Validators.max(22),
       ])
     });
   }
@@ -103,10 +135,33 @@ export class CharacterComponent {
   create(formGroup: FormGroup): void {
     console.log(formGroup)
     this._service.create(formGroup)
-      .subscribe(ch => console.log("Created Character", ch.data));
+      .subscribe(ch => {
+        console.log("Debug")
+        console.log("Created Character", ch.data)
+      });
   }
 
   batchGet(): Character[] {
     return this._characters;
+  }
+
+  batchFlavored(): Map<string, Flavor> {
+    return this._flavored;
+  }
+
+  flavoredCharacters(): void {
+    this._service.batchGet(1000).subscribe(obj => {
+      this._characters = obj.data['allCharacters'];
+      console.log("Characters", this._characters)
+      console.log("Length", this._characters.length)
+      for (let i = this._characters.length - 1; i >= 0; i--) {
+        this._service.flavor(this._characters[i].uuid)
+          .subscribe(res => {
+            let flavor = res.data['characterFlavor']
+            console.log("Flavor", flavor.text)
+            this._flavored.set(this._characters[i].name, flavor)
+          });
+      }
+    })
   }
 }

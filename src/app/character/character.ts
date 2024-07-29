@@ -1,6 +1,8 @@
+import {Stat} from "./stat";
+
 export class Character {
   constructor(uuid: string, name: string, description: string,
-              gender: string, age: number, height: number, weight: number) {
+              gender: string, age: number, height: number, weight: number, stats: Stat[]) {
     this._uuid = uuid;
     this._name = name;
     this._description = description;
@@ -8,6 +10,18 @@ export class Character {
     this._age = age;
     this._height = height;
     this._weight = weight;
+    this._stats = stats;
+
+  }
+
+  private _stats: Stat[];
+
+  get stats(): Stat[] {
+    return this._stats;
+  }
+
+  set stats(value: Stat[]) {
+    this._stats = value;
   }
 
   private _uuid: string;

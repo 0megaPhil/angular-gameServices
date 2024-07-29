@@ -8,13 +8,20 @@
     <blockquote>Character Age: <input formControlName="age" type="number"></blockquote>
     <blockquote>Character Height (inches): <input formControlName="height" type="number"></blockquote>
     <blockquote>Character Weight (pounds): <input formControlName="weight" type="number"></blockquote>
+    <blockquote>Strength: <input formControlName="strength" type="number"></blockquote>
+    <blockquote>Intelligence: <input formControlName="intelligence" type="number"></blockquote>
+    <blockquote>Wisdom: <input formControlName="wisdom" type="number"></blockquote>
+    <blockquote>Dexterity: <input formControlName="dexterity" type="number"></blockquote>
+    <blockquote>Charisma: <input formControlName="charisma" type="number"></blockquote>
+    <blockquote>Constitution: <input formControlName="constitution" type="number"></blockquote>
     <a><input type="submit" value="Submit"></a>
   </form>
 
   <h2>Game Stored Characters</h2>
   <div class="characters-menu">
-    <a *ngFor="let character of batchGet()">
-      <p>{{ character.name }}</p>
+    <a *ngFor="let entry of batchFlavored() | keyvalue">
+      <p>Name: {{ entry.key }}</p>
+      <p>Description: {{ entry.value.text }} </p>
     </a>
   </div>
 
