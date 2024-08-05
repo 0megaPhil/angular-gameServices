@@ -3,8 +3,13 @@
   <h2>Create New Character</h2>
   <form (ngSubmit)="create(_characterFormGroup)" [formGroup]="_characterFormGroup">
     <blockquote>Character Name: <input formControlName="name" type="text"></blockquote>
-    <blockquote>Character Description: <input formControlName="description" type="text"></blockquote>
+    <blockquote>Character Sex: <select formControlName="sex" type="">
+      <option *ngFor="let s of sexes()" [ngValue]="s">{{ s }}</option>
+    </select></blockquote>
     <blockquote>Character Gender: <input formControlName="gender" type="text"></blockquote>
+    <blockquote>Character Race: <select formControlName="race" type="">
+      <option *ngFor="let obj of allRaces()" [ngValue]="obj.name">{{ obj.name }}</option>
+    </select></blockquote>
     <blockquote>Character Age: <input formControlName="age" type="number"></blockquote>
     <blockquote>Character Height (inches): <input formControlName="height" type="number"></blockquote>
     <blockquote>Character Weight (pounds): <input formControlName="weight" type="number"></blockquote>

@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {CharacterService} from "./character.service";
-import {Character} from "./character";
+import {Character, Race, Skill, Stat} from "./character";
 import {
   AbstractControl,
   FormBuilder,
@@ -37,8 +37,9 @@ export class CharacterComponent {
   emptyCharacter(): FormGroup {
     return this._formBuilder.group({
       name: '',
-      description: '',
+      sex: '',
       gender: '',
+      race: '',
       age: '',
       height: '',
       weight: '',
@@ -60,7 +61,7 @@ export class CharacterComponent {
         Validators.pattern("[A-Za-z ]"),
         this.uniqueValidator()
       ]),
-      description: new FormControl("", [
+      sex: new FormControl("", [
         Validators.required,
         Validators.minLength(0),
         Validators.maxLength(4196),
@@ -70,6 +71,12 @@ export class CharacterComponent {
         Validators.required,
         Validators.minLength(2),
         Validators.maxLength(128),
+        Validators.pattern("[A-Za-z ]")
+      ]),
+      race: new FormControl("", [
+        Validators.required,
+        Validators.minLength(0),
+        Validators.maxLength(4196),
         Validators.pattern("[A-Za-z ]")
       ]),
       age: new FormControl("pounds", [
@@ -132,35 +139,57 @@ export class CharacterComponent {
     };
   }
 
+  sexes(): String[] {
+    return [
+      "MALE",
+      "FEMALE",
+      "ASEXUAL",
+      "HERMAPHRODITIC"]
+  }
+
   create(formGroup: FormGroup): void {
     console.log(formGroup)
-    this._service.create(formGroup)
+    this._service.createCharacter(formGroup)
       .subscribe(ch => {
-        console.log("Debug")
         console.log("Created Character", ch.data)
       });
   }
 
-  batchGet(): Character[] {
+  allCharacters(): Character[] {
     return this._characters;
   }
+
+  allRaces(): Race[] {
+    return this._service.races;
+  }
+
+  allSkills(): Skill[] {
+    return this._service.skills;
+  }
+
+  allStats(): Stat[] {
+    return this._service.stats;
+  }
+
 
   batchFlavored(): Map<string, Flavor> {
     return this._flavored;
   }
 
   flavoredCharacters(): void {
-    this._service.batchGet(1000).subscribe(obj => {
+    this._service.getCharacters(1000).subscribe(obj => {
       this._characters = obj.data['allCharacters'];
       console.log("Characters", this._characters)
       console.log("Length", this._characters.length)
       for (let i = this._characters.length - 1; i >= 0; i--) {
-        this._service.flavor(this._characters[i].uuid)
-          .subscribe(res => {
-            let flavor = res.data['characterFlavor']
-            console.log("Flavor", flavor.text)
-            this._flavored.set(this._characters[i].name, flavor)
-          });
+        if (this._characters[i].uuid !== undefined) {
+          this._service.flavorByCharacterId(this._characters[i].uuid as string)
+            .subscribe(res => {
+              let flavor = res.data['characterFlavor']
+              console.log("Flavor", flavor.text)
+              this._flavored.set(this._characters[i].name, flavor)
+            });
+        }
       }
     })
   }

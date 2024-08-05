@@ -1,5 +1,14 @@
 type Query {
   allCharacters(limit: Int): [Character]
+  allStats(limit: Int): [Stat]
+  allSkills(limit: Int): [Skill]
+  allRaces(limit: Int): [Race]
+  createStat(input: StatInput): Stat
+  updateStat(input: StatInput): Stat
+  createSkill(input: SkillInput): Skill
+  updateSkill(input: SkillInput): Skill
+  createRace(input: RaceInput): Race
+  updateRace(input: RaceInput): Race
   createCharacter(input: CharacterInput): Character
   updateCharacter(input: CharacterInput): Character
   createInventory(input: InventoryInput): Inventory
@@ -21,54 +30,163 @@ type Query {
   currencyById(uuid: ID): Currency
   userById(uuid: ID): User
   worldById(uuid: ID): World
-  detailedCharacter(uuid: ID): DetailedCharacter
   characterFlavor(uuid: ID): Flavor
 }
 
 type Flavor {
   targetId: ID!
-  text: String!
   objectType: String!
+  appearance: String!
+  background: String!
+  personality: String!
+  summary: String!
+}
+
+type Race {
+  uuid: ID!
+  name: String!
+  description: String
+  worldId: ID
+  characteristics: [Characteristic]
+}
+
+input RaceInput {
+  uuid: ID
+  name: String!
+  description: String
+  worldId: ID
+  characteristics: [CharacteristicInput]
+}
+
+type Skill {
+  uuid: ID!
+  name: String!
+  description: String
+}
+
+input SkillInput {
+  uuid: ID
+  name: String!
+  description: String
+}
+
+type Stat {
+  uuid: ID!
+  name: String!
+  description: String
+}
+
+input StatInput {
+  uuid: ID
+  name: String!
+  description: String
+}
+
+type CharacterSkill {
+  skillId: ID!
+  name: String!
+  skillValue: Int!
+}
+
+input CharacterSkillInput {
+  skillId: ID!
+  name: String
+  skillValue: Int!
+}
+
+type CharacterStat {
+  statId: ID!
+  name: String
+  statValue: Int!
+}
+
+type Character {
+  uuid: ID!
+  name: String!
+  summary: String
+  appearance: String
+  personality: String
+  background: String
+  sex: String
+  race: Race
+  dimensions: [Dimension]
+  user: User
+  inventory: Inventory
+  skills: [CharacterSkill]
+  stats: [CharacterStat]
+}
+
+type Characteristic {
+  value: String!
+  name: String!
+  description: String
+}
+
+input CharacteristicInput {
+  value: String!
+  name: String!
+  description: String
+}
+
+type Dimension {
+  value: String!
+  name: String!
+  unitType: String!
+  description: String
+}
+
+input DimensionInput {
+  value: String!
+  name: String!
+  unitType: String!
+  description: String
 }
 
 input CharacterStatInput {
-  value: String!
-  key: String!
-  description: String
+  statId: ID!
+  name: String
+  statValue: Int!
 }
 
 interface Attribute {
   value: String!
-  key: String!
+  name: String!
   description: String
 }
 
 input CharacterInput {
   uuid: ID
   name: String!
-  description: String
-  gender: String
-  age: Int
-  height: Int
-  weight: Int
-  inventoryId: ID
+  summary: String
+  appearance: String
+  personality: String
+  background: String
+  sex: String
+  race: RaceInput
+  dimensions: [DimensionInput]
+  user: UserInput
+  inventory: InventoryInput
+  skills: [CharacterSkillInput]
   stats: [CharacterStatInput]
 }
 
 input InventoryInput {
   uuid: ID
-  characterId: ID!
+  characterId: ID
+  items: [InventoryItemInput]
+  currencies: [InventoryCurrencyInput]
 }
 
 type Inventory {
   uuid: ID!
   characterId: ID!
-  items: [ID!]
-  currencies: [ID!]
+  items: [InventoryItem]
+  currencies: [InventoryCurrency]
 }
 
 input InventoryItemInput {
   uuid: ID
+  name: String
   itemId: ID!
   inventoryId: ID!
   quantity: Int!
@@ -78,17 +196,12 @@ input CurrencyInput {
   uuid: ID
   name: String!
   description: String!
-  attributes: [String]
-}
-
-type CharacterStat implements Attribute {
-  value: String!
-  key: String!
-  description: String
+  characteristics: [CharacteristicInput]
 }
 
 input InventoryCurrencyInput {
   uuid: ID
+  name: String
   currencyId: ID!
   inventoryId: ID!
   quantity: Int!
@@ -98,11 +211,12 @@ input ItemInput {
   uuid: ID
   name: String!
   description: String
-  attributes: [String]
+  characteristics: [CharacteristicInput]
 }
 
 type InventoryItem {
   uuid: ID!
+  name: String
   itemId: ID!
   inventoryId: ID!
   quantity: Int!
@@ -112,11 +226,12 @@ type Currency {
   uuid: ID!
   name: String!
   description: String
-  attributes: [String]
+  characteristics: [Characteristic]
 }
 
 type InventoryCurrency {
   uuid: ID!
+  name: String
   currencyId: ID!
   inventoryId: ID!
   quantity: Int!
@@ -126,20 +241,7 @@ type Item {
   uuid: ID!
   name: String!
   description: String
-  attributes: [String]
-}
-
-type Character {
-  uuid: ID!
-  name: String!
-  description: String
-  gender: String
-  age: Int
-  height: Int
-  weight: Int
-  userId: ID
-  inventoryId: ID
-  stats: [CharacterStat]
+  characteristics: [Characteristic]
 }
 
 type User {
@@ -148,36 +250,12 @@ type User {
   lastName: String!
 }
 
+input UserInput {
+  uuid: ID
+  firstName: String!
+  lastName: String!
+}
+
 type World {
   uuid: ID!
-}
-
-type DetailedCharacter {
-  uuid: ID!
-  name: String!
-  description: String
-  gender: String
-  age: Int
-  height: Int
-  weight: Int
-  user: User
-  inventory: DetailedInventory
-}
-
-type DetailedInventory {
-  uuid: ID!
-  items: [DetailedInventoryItem!]
-  currencies: [DetailedInventoryCurrency!]
-}
-
-type DetailedInventoryItem {
-  uuid: ID!
-  item: Item!
-  quantity: Int!
-}
-
-type DetailedInventoryCurrency {
-  uuid: ID!
-  currency: Currency!
-  quantity: Int!
 }

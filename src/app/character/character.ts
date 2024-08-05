@@ -1,96 +1,60 @@
-import {Stat} from "./stat";
+import {User} from "../user/user";
+import {Inventory} from "../inventory/inventory";
+
+export class Skill {
+  constructor(public uuid: string, public name: string, public description: string) {
+  }
+}
+
+
+export class CharacterSkill {
+  constructor(public skillId: string, public name: string, public skillValue: number, public description: string) {
+  }
+}
+
+export class Stat {
+  constructor(public name: string, public description: string, public uuid?: string) {
+  }
+}
+
+export class Race {
+  constructor(public name: string, public description: string, public uuid?: string, public worldId?: string) {
+  }
+}
+
+
+export class CharacterStat {
+  constructor(public statId: string, public name: string, public statValue: number, public description?: string) {
+  }
+}
+
+export class Dimension {
+  constructor(public name: string, public unitType: string, public value: number, public description?: string) {
+  }
+}
+
 
 export class Character {
-  constructor(uuid: string, name: string, description: string,
-              gender: string, age: number, height: number, weight: number, stats: Stat[]) {
-    this._uuid = uuid;
-    this._name = name;
-    this._description = description;
-    this._gender = gender;
-    this._age = age;
-    this._height = height;
-    this._weight = weight;
-    this._stats = stats;
-
+  constructor(
+    public name: string,
+    public summary?: string,
+    public appearance?: string,
+    public personality?: string,
+    public background?: string,
+    public sex?: string,
+    public race?: Race,
+    public dimensions?: Dimension[],
+    public user?: User,
+    public inventory?: Inventory,
+    public skills?: CharacterSkill[],
+    public stats?: CharacterStat[],
+    public uuid?: string,
+  ) {
   }
 
-  private _stats: Stat[];
-
-  get stats(): Stat[] {
-    return this._stats;
-  }
-
-  set stats(value: Stat[]) {
-    this._stats = value;
-  }
-
-  private _uuid: string;
-
-  get uuid(): string {
-    return this._uuid;
-  }
-
-  set uuid(value: string) {
-    this._uuid = value;
-  }
-
-  private _name: string;
-
-  get name(): string {
-    return this._name;
-  }
-
-  set name(value: string) {
-    this._name = value;
-  }
-
-  private _description: string;
-
-  get description(): string {
-    return this._description;
-  }
-
-  set description(value: string) {
-    this._description = value;
-  }
-
-  private _gender: string;
-
-  get gender(): string {
-    return this._gender;
-  }
-
-  set gender(value: string) {
-    this._gender = value;
-  }
-
-  private _age: number;
-
-  get age(): number {
-    return this._age;
-  }
-
-  set age(value: number) {
-    this._age = value;
-  }
-
-  private _height: number;
-
-  get height(): number {
-    return this._height;
-  }
-
-  set height(value: number) {
-    this._height = value;
-  }
-
-  private _weight: number;
-
-  get weight(): number {
-    return this._weight;
-  }
-
-  set weight(value: number) {
-    this._weight = value;
+  filtered(): Character {
+    return new Character(this.name, this.summary,
+      this.appearance, this.personality, this.background, this.sex, this.race,
+      this.dimensions, this.user, this.inventory, this.skills, this.stats, this.uuid)
   }
 }
